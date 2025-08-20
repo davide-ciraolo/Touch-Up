@@ -79,7 +79,7 @@ struct DebugView: View {
             }, label: {
                 HStack {
                     Text("Close overlay with ")
-                    Label("W", systemImage: "command.square.fill")
+                    Text("W + command")
                     Text("or by mouse-clicking here")
                 }
                 .font(.largeTitle)
@@ -91,7 +91,6 @@ struct DebugView: View {
             })
             .foregroundColor(.gray)
             .buttonStyle(.borderless)
-            .keyboardShortcut(KeyEquivalent("w"), modifiers: [.command])
             .padding(.bottom, 140)
         }
         

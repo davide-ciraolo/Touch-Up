@@ -28,7 +28,6 @@ struct SettingsView: View {
                     
                     Text("Grant Accessibility Access")
                 }
-                .buttonStyle(BorderedProminentButtonStyle())
             }
         }
     }
@@ -118,7 +117,7 @@ struct SettingsView: View {
                 HStack {
                     Text("Open Fullscreen Test Environment")
                     Spacer()
-                    Image(systemName: "arrow.up.forward.app.fill")
+                    Text("^")
                 }
                 
             })
@@ -135,16 +134,19 @@ struct SettingsView: View {
             VStack {
                 if let versionString = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
                     Text("Touch Up v\(versionString)")
-                        .font(.title2)
+                        .font(.title)
                 }
 
                 Text("Made with 🐑 in Aachen")
                     .font(.footnote)
                 
-                Link(destination: URL(string: "https://github.com/shueber/Touch-Up")!, label: {
-                    Label("GitHub", systemImage: "link")
-                        .foregroundColor(.accentColor)
-                })
+                Text("GitHub")
+                    .foregroundColor(.blue)
+                    .underline()
+                    .onTapGesture {
+                        NSWorkspace.shared.open(URL(string: "https://github.com/shueber/Touch-Up")!)
+                    }
+                
             }
             .padding(.vertical)
             Spacer()

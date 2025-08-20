@@ -381,11 +381,11 @@ enum ConnectionState: Int {
         
         switch self {
         case .uncertain:
-            image = NSImage(systemSymbolName: "rectangle.dashed", accessibilityDescription: nil)
+            image = NSImage(named: "NSStatusNone") // Default system icon
         case .disconnected:
-            image = NSImage(systemSymbolName: "rectangle.badge.xmark", accessibilityDescription: nil)
+            image = NSImage(named: "NSStatusUnavailable") // Default system icon
         default:
-            image = NSImage(systemSymbolName: "hand.point.up.left", accessibilityDescription: nil)
+            image = NSImage(named: "NSStatusAvailable") // Default system icon
         }
 
         image?.isTemplate = true
