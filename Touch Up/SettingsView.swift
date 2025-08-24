@@ -177,6 +177,11 @@ struct SettingsView: View {
     
     var container: some View {
         return List {
+            
+            LegacySection {
+                welcomeBanner
+            }
+            
             LegacySection {
                 top
             }
