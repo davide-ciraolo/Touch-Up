@@ -108,12 +108,12 @@ class TouchUp: NSObject, ObservableObject {
             return false
         }
         
-        if let lastDateUSBAdded, let lastDateScreenAdded, let idOfLastAddedScreen {
-            if Date().timeIntervalSince(lastDateUSBAdded) < hotPlugTimeInterval
-                && Date().timeIntervalSince(lastDateScreenAdded) < hotPlugTimeInterval {
+        if let lastDateUSBAdded1 = lastDateUSBAdded, let lastDateScreenAdded1 = lastDateScreenAdded, let idOfLastAddedScreen1 = idOfLastAddedScreen {
+            if Date().timeIntervalSince(lastDateUSBAdded1) < hotPlugTimeInterval
+                && Date().timeIntervalSince(lastDateScreenAdded1) < hotPlugTimeInterval {
                 
                 
-                if let screen = self.connectedScreens.first(where: {$0.id == idOfLastAddedScreen}) {
+                if let screen = self.connectedScreens.first(where: {$0.id == idOfLastAddedScreen1}) {
                     self.connectedTouchscreen = screen
                     let cues = identificationCues
                     let match = screen.matching(name: cues.name, id: cues.id)
@@ -142,8 +142,8 @@ class TouchUp: NSObject, ObservableObject {
             let new = connectedScreens.first { s in
                 !(oldScreenList.contains(where: {$0.id == s.id}))
             }
-            if let new {
-                self.idOfLastAddedScreen = new.id
+            if let new1 = new {
+                self.idOfLastAddedScreen = new1.id
                 identifyHotPlug()
             }
         }
@@ -211,7 +211,7 @@ extension TouchUp {
         ])
         
         holdDuration = defaults.double(forKey: "holdDuration")
-        doubleClickDistance = defaults.double(forKey: "doubleClickDistance")
+        doubleClickDistance = CGFloat(defaults.double(forKey: "doubleClickDistance"))
         errorResistance = defaults.integer(forKey: "errorResistance")
         ignoreOriginTouches = defaults.bool(forKey: "ignoreOriginTouches")
         
@@ -317,49 +317,49 @@ extension TouchUp: TUCTouchDelegate {
 
 
 extension TouchUp {
-    func uiLabels<T>(for keyPath: KeyPath<TouchUp, T>) -> (title:String, description:String) {
+    func uiLabels(for keyPath: AnyKeyPath) -> (title:String, description:String) {
         switch keyPath {
-        case \.isPublishingMouseEventsEnabled:
+        case \TouchUp.isPublishingMouseEventsEnabled:
             return("Control Mouse with Touch",
                    "Turns the driver on or off.")
             
-        case \.connectedTouchscreen:
+        case \TouchUp..connectedTouchscreen:
             return("Assign Mouse Events to",
                    "Specifies which screen should receive the touch events.")
             
-        case \.isScrollingWithOneFingerEnabled:
+        case \TouchUp..isScrollingWithOneFingerEnabled:
             return("Scroll with one finger",
                    "Scroll by dragging one finger over the touchscreen. If this option is disabled, you will move the cursor instead.")
             
-        case \.isSecondaryClickEnabled:
+        case \TouchUp..isSecondaryClickEnabled:
             return("Secondary Click",
                    "While your pointing finger is resting on the screen, tap another finger in proximity to it to generate a secondary click event at the location of the first finger.")
             
-        case \.isMagnificationEnabled:
+        case \TouchUp..isMagnificationEnabled:
             return("Magnification",
                    "Pinch two fingers to increase or decrease the size of the content. (EXPERIMENTAL)")
             
-        case \.isClickWindowToFrontEnabled:
+        case \TouchUp..isClickWindowToFrontEnabled:
             return("Bring Windows to Front",
                    "When touching a window that is not frontmost, bring it to front first. (EXPERIMENTAL)")
             
-        case \.isClickOnLiftEnabled:
+        case \TouchUp..isClickOnLiftEnabled:
             return("Point and click",
                    "Very reduced input set for exhibits: Move cursor by dragging, and click by releasing. Overrides scrolling and dragging functionality.")
             
-        case \.holdDuration:
+        case \TouchUp..holdDuration:
             return("Hold Duration",
                    "How long do you have to hold finger to initiate hold&drag")
             
-        case \.doubleClickDistance:
+        case \TouchUp..doubleClickDistance:
             return("Double Click Zone",
                    "How many mm can two taps be apart from each other to qualify double click")
             
-        case \.ignoreOriginTouches:
+        case \TouchUp..ignoreOriginTouches:
             return("Ignore Origin Touches",
                    "If your touchscreen randomly sends coordinate (0,0) in its datastream, toggle this option to make input more stable.")
             
-        case \.errorResistance:
+        case \TouchUp..errorResistance:
             return("Error Resistance",
                    "If your touchscreen is really unreliable at reporting touches, increase this slider to make inputs more stable at the cost of higher latency in detecting liftoffs.")
             
@@ -381,11 +381,11 @@ enum ConnectionState: Int {
         
         switch self {
         case .uncertain:
-            image = NSImage(named: "NSStatusNone") // Default system icon
+            image = NSImage(named: NSImage.touchBarGoBackTemplateName)
         case .disconnected:
-            image = NSImage(named: "NSStatusUnavailable") // Default system icon
+            image = NSImage(named: NSImage.stopProgressTemplateName)
         default:
-            image = NSImage(named: "NSStatusAvailable") // Default system icon
+            image = NSImage(named: NSImage.touchBarPlayTemplateName)
         }
 
         image?.isTemplate = true

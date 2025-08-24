@@ -78,19 +78,14 @@ struct DebugView: View {
                 closeAction()
             }, label: {
                 HStack {
-                    Text("Close overlay with ")
-                    Text("W + command")
-                    Text("or by mouse-clicking here")
+                    Text("Close overlay with W + Command or by mouse-clicking here")
                 }
                 .font(.largeTitle)
-                .modify {
-                    if #available(macOS 13.0, *) {
-                        $0.fontDesign(.rounded)
-                    } else { $0 }
-                }
+                .modify { $0 }
             })
             .foregroundColor(.gray)
-            .buttonStyle(.borderless)
+            .buttonStyle(BorderlessButtonStyle())
+//            .keyboardShortcut(KeyEquivalent("w"), modifiers: [.command])
             .padding(.bottom, 140)
         }
         

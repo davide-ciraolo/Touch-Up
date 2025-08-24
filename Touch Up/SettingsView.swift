@@ -28,13 +28,14 @@ struct SettingsView: View {
                     
                     Text("Grant Accessibility Access")
                 }
+                .buttonStyle(BorderedButtonStyle())
             }
         }
     }
     
     var top: some View {
         Group {
-            Toggle(model.uiLabels(for: \.isPublishingMouseEventsEnabled).title, isOn: $model.isPublishingMouseEventsEnabled)
+            Toggle(model.uiLabels(for: \TouchUp.isPublishingMouseEventsEnabled).title, isOn: $model.isPublishingMouseEventsEnabled)
             
             let id_: Binding<UInt> = Binding {return (model.connectedTouchscreen?.id) ?? 0}
             set: { value in
@@ -42,7 +43,7 @@ struct SettingsView: View {
                 model.rememeberCues()
             }
 
-            Picker(model.uiLabels(for: \.connectedTouchscreen).title, selection: id_) {
+            Picker(model.uiLabels(for: \TouchUp.connectedTouchscreen).title, selection: id_) {
                 ForEach(model.connectedScreens) {
                     Text($0.name).tag($0.id)
                 }
@@ -61,25 +62,28 @@ struct SettingsView: View {
                 model.isClickOnLiftEnabled = value == 2
             }
             
-            Picker(selection: mode_) {
+            Picker(
+                selection: mode_,
+                label: SettingsExplanationLabel(
+                    labels: ("On Finger Drag", "Specify which action should occur when dragging one finger on the touch screen.")
+                )
+            ) {
                 Text("Scroll").tag(0)
                 Text("Move Cursor").tag(1)
                 Text("Point and Click").tag(2)
-            } label: {
-                SettingsExplanationLabel(labels: ("On Finger Drag", "Specify which action should occur when dragging one finger on the touch screen."))
             }
 
             
             Toggle(isOn: $model.isSecondaryClickEnabled) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.isSecondaryClickEnabled))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.isSecondaryClickEnabled))
             }
             
             Toggle(isOn: $model.isMagnificationEnabled) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.isMagnificationEnabled))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.isMagnificationEnabled))
             }
             
             Toggle(isOn: $model.isClickWindowToFrontEnabled) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.isClickWindowToFrontEnabled))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.isClickWindowToFrontEnabled))
             }
         }
     }
@@ -88,11 +92,11 @@ struct SettingsView: View {
     var parameterSettings: some View {
         Group {
             Slider(value: $model.holdDuration, in: 0.0...0.16, step: 0.02){
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.holdDuration))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.holdDuration))
             }
             
             Slider(value: $model.doubleClickDistance, in: 0...8, step: 1) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.doubleClickDistance))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.doubleClickDistance))
             }
         }
     }
@@ -104,11 +108,11 @@ struct SettingsView: View {
                 model.errorResistance = NSInteger(Int($0)) }
             
             Slider(value: errorResistance_ , in: 0...10, step: 1) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.errorResistance))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.errorResistance))
             }
             
             Toggle(isOn: $model.ignoreOriginTouches) {
-                SettingsExplanationLabel(labels: model.uiLabels(for: \.ignoreOriginTouches))
+                SettingsExplanationLabel(labels: model.uiLabels(for: \TouchUp.ignoreOriginTouches))
             }
             
             Button(action: {
@@ -117,7 +121,8 @@ struct SettingsView: View {
                 HStack {
                     Text("Open Fullscreen Test Environment")
                     Spacer()
-                    Text("^")
+                    Image(nsImage: NSImage(named: NSImage.shareTemplateName) ?? NSImage())
+                                .renderingMode(.template)
                 }
                 
             })
@@ -140,13 +145,10 @@ struct SettingsView: View {
                 Text("Made with 🐑 in Aachen")
                     .font(.footnote)
                 
-                Text("GitHub")
-                    .foregroundColor(.blue)
-                    .underline()
-                    .onTapGesture {
-                        NSWorkspace.shared.open(URL(string: "https://github.com/shueber/Touch-Up")!)
-                    }
-                
+//                Link(destination: URL(string: "https://github.com/shueber/Touch-Up")!, label: {
+//                    Label("GitHub", systemImage: "link")
+//                        .foregroundColor(.accentColor)
+//                })
             }
             .padding(.vertical)
             Spacer()
@@ -157,68 +159,27 @@ struct SettingsView: View {
     }
     
     var container: some View {
-        if #available(macOS 13.0, *) {
-            return Form {
-                if !model.isAccessibilityAccessGranted {
-                    Section {
-                        welcomeBanner
-                    } footer: {
-                        Rectangle()
-                            .frame(width:0, height:0)
-                            .foregroundColor(.clear)
-                    }
-
-                }
-                
-                Section {
-                    top
-                }
-
-                Section("Gestures") {
-                    gestureSettings
-                }
-                
-                Section("Parameters") {
-                    parameterSettings
-                }
-
-                Section {
-                    troubleshootingSettings
-                } header: {
-                    Text("Troubleshooting")
-                } footer: {
-                    footer
-                }
-
-
-
+        return List {
+            LegacySection {
+                top
             }
-            .formStyle(.grouped)
-
-        } else {
-            return List {
-                LegacySection {
-                    top
-                }
-                
-                LegacySection(title: "Gestures") {
-                    gestureSettings
-                }
-                
-                LegacySection(title: "Parameters") {
-                    parameterSettings
-                }
-                
-                LegacySection(title: "Troubleshooting") {
-                    troubleshootingSettings
-                }
-                
-                footer
-                
+            
+            LegacySection(title: "Gestures") {
+                gestureSettings
             }
-            .toggleStyle(.switch)
+            
+            LegacySection(title: "Parameters") {
+                parameterSettings
+            }
+            
+            LegacySection(title: "Troubleshooting") {
+                troubleshootingSettings
+            }
+            
+            footer
             
         }
+        .toggleStyle(SwitchToggleStyle())
     }
     
     
@@ -245,7 +206,7 @@ struct LegacySection<Content: View>: View {
             
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .foregroundColor(.secondary.opacity(0.1))
+                    .foregroundColor(.secondary)
                     .shadow(radius: 1)
                     
                     
