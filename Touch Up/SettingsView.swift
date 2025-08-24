@@ -132,6 +132,25 @@ struct SettingsView: View {
         }
     }
     
+    @ViewBuilder
+    var githubLink: some View {
+        if #available(macOS 11.0, *) {
+            Link(destination: URL(string: "https://github.com/shueber/Touch-Up")!) {
+                Label("GitHub", systemImage: "link")
+                    .foregroundColor(.accentColor)
+            }
+        } else {
+            Button(action: {
+                if let url = URL(string: "https://github.com/shueber/Touch-Up") {
+                    NSWorkspace.shared.open(url)
+                }
+            }, label: {
+                Text("GitHub")
+                    .foregroundColor(.accentColor)
+            })
+            .buttonStyle(BorderlessButtonStyle())
+        }
+    }
     
     var footer: some View {
         HStack {
@@ -145,10 +164,8 @@ struct SettingsView: View {
                 Text("Made with 🐑 in Aachen")
                     .font(.footnote)
                 
-//                Link(destination: URL(string: "https://github.com/shueber/Touch-Up")!, label: {
-//                    Label("GitHub", systemImage: "link")
-//                        .foregroundColor(.accentColor)
-//                })
+                githubLink
+
             }
             .padding(.vertical)
             Spacer()
